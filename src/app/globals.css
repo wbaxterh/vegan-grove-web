@@ -182,27 +182,6 @@
   }
 }
 
-/* Scanlines over a faint grid. Landing hero only; it fades out toward the bottom. */
-@utility vg-hero-texture {
-  background-image:
-    repeating-linear-gradient(
-      0deg,
-      transparent 0 3px,
-      color-mix(in oklab, var(--vg-primary) 5%, transparent) 3px 4px
-    ),
-    linear-gradient(color-mix(in oklab, var(--vg-primary) 7%, transparent) 1px, transparent 1px),
-    linear-gradient(
-      90deg,
-      color-mix(in oklab, var(--vg-primary) 7%, transparent) 1px,
-      transparent 1px
-    );
-  background-size:
-    100% 4px,
-    48px 48px,
-    48px 48px;
-  mask-image: radial-gradient(ellipse at 50% 0%, black 30%, transparent 75%);
-}
-
 /* Neon text glow, meant for dark mode headings only. */
 @utility vg-glow {
   text-shadow: 0 0 24px color-mix(in oklab, var(--vg-primary) 45%, transparent);

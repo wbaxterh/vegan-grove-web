@@ -71,7 +71,6 @@ export default function HomePage() {
   return (
     <>
       <section className="relative overflow-hidden border-b border-border">
-        <div className="vg-hero-texture pointer-events-none absolute inset-0" aria-hidden="true" />
         <div className="relative mx-auto max-w-6xl px-4 pt-20 pb-16 sm:px-6 sm:pt-28 sm:pb-24 lg:px-8">
           <SectionLabel>Southern California, privacy first</SectionLabel>
           <h1 className="mt-4 font-heading text-5xl font-bold tracking-tight sm:text-7xl dark:vg-glow">

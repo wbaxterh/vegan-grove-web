@@ -2,6 +2,7 @@
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Locate } from 'lucide-react';
+import { setWorkerUrl } from 'maplibre-gl';
 import Link from 'next/link';
 import { useCallback, useRef, useState } from 'react';
 import { Map as MapLibreMap, type MapRef, Marker, NavigationControl } from 'react-map-gl/maplibre';
@@ -9,6 +10,10 @@ import { Button } from '@/components/ui/button';
 import { apiFetch, type ListResponse } from '@/lib/api';
 import type { Place } from '@/lib/types';
 import { cn } from '@/lib/utils';
+
+// Self-hosted worker (see scripts/copy-maplibre-worker.mjs): the bundled one
+// cannot resolve its shared chunk under Turbopack's hashed file names.
+setWorkerUrl('/maplibre/maplibre-gl-worker.mjs');
 
 /** OpenFreeMap: no API key, no cookies, no per-user data on the tile server. */
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
