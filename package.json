@@ -50,6 +50,6 @@
     "lint-staged": "^17.5.1",
     "secretlint": "^13.0.5",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^7"
   }
 }
