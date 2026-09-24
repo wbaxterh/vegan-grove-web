@@ -5,6 +5,7 @@ frontend:
       commands:
         # Amplify only exposes env vars to the build shell; allowlist the public ones into
         # .env.production so `next build` can inline them. Never add secrets to this grep.
+        - nvm use 24
         - env | grep -e NEXT_PUBLIC_ -e SESSION_ >> .env.production || true
         - npm ci
     build:

@@ -17,7 +17,10 @@
   --vg-primary-dark: #3dff8a;
   --vg-primary-light: #0e7c3a;
   --vg-accent: #ff2bd6;
-  --vg-accent-2: #22e5ff;
+  /* The neon cyan is a dark-mode color. Light mode derives a deeper cyan from it
+   * below, because the neon reads at 1.5:1 on white. */
+  --vg-accent-2-neon: #22e5ff;
+  --vg-accent-2: var(--vg-accent-2-neon);
   --vg-danger: #ff4d4d;
 
   --vg-font-sans:
@@ -35,6 +38,9 @@
 :root {
   color-scheme: light;
   --vg-primary: var(--vg-primary-light);
+  /* 55% neon over the dark base measures 4.9:1 on white and 4.6:1 on the page
+   * background (WCAG AA for body text); 60% already drops under 4.5:1. */
+  --vg-accent-2: color-mix(in oklab, var(--vg-accent-2-neon) 55%, var(--vg-bg));
 
   --background: var(--vg-light-bg);
   --foreground: var(--vg-bg);
@@ -74,6 +80,7 @@
 .dark {
   color-scheme: dark;
   --vg-primary: var(--vg-primary-dark);
+  --vg-accent-2: var(--vg-accent-2-neon);
 
   --background: var(--vg-bg);
   --foreground: var(--vg-text);
