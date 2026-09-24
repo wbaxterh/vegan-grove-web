@@ -1,0 +1,209 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Vegan Grove brand tokens (SCAFFOLD-SPEC section 2) are the source of truth. The shadcn
+ * semantic variables below are derived from them, and components use only the semantic
+ * names or the `vg-*` Tailwind colors. No other hex values belong in this repo.
+ */
+:root {
+  --vg-bg: #0b0f0c;
+  --vg-surface: #121a15;
+  --vg-text: #e6f2ea;
+  --vg-muted: #8fa89a;
+  --vg-primary-dark: #3dff8a;
+  --vg-primary-light: #0e7c3a;
+  --vg-accent: #ff2bd6;
+  --vg-accent-2: #22e5ff;
+  --vg-danger: #ff4d4d;
+
+  --vg-font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --vg-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Light-mode neutrals: derived for contrast, not part of the spec table. */
+  --vg-light-bg: #f4f8f5;
+  --vg-light-surface: #ffffff;
+  --vg-light-muted: #4f6358;
+  --vg-light-border: #d5e0d9;
+}
+
+/* Light mode. */
+:root {
+  color-scheme: light;
+  --vg-primary: var(--vg-primary-light);
+
+  --background: var(--vg-light-bg);
+  --foreground: var(--vg-bg);
+  --card: var(--vg-light-surface);
+  --card-foreground: var(--vg-bg);
+  --popover: var(--vg-light-surface);
+  --popover-foreground: var(--vg-bg);
+  --primary: var(--vg-primary-light);
+  --primary-foreground: var(--vg-light-surface);
+  --secondary: color-mix(in oklab, var(--vg-light-surface), var(--vg-primary-light) 8%);
+  --secondary-foreground: var(--vg-bg);
+  --muted: color-mix(in oklab, var(--vg-light-bg), var(--vg-bg) 5%);
+  --muted-foreground: var(--vg-light-muted);
+  --accent: color-mix(in oklab, var(--vg-light-bg), var(--vg-primary-light) 10%);
+  --accent-foreground: var(--vg-bg);
+  --destructive: color-mix(in oklab, var(--vg-danger), var(--vg-bg) 25%);
+  --border: var(--vg-light-border);
+  --input: var(--vg-light-border);
+  --ring: var(--vg-primary-light);
+  --chart-1: var(--vg-primary-light);
+  --chart-2: var(--vg-accent-2);
+  --chart-3: var(--vg-accent);
+  --chart-4: var(--vg-light-muted);
+  --chart-5: var(--vg-danger);
+  --radius: 0.375rem;
+  --sidebar: var(--vg-light-surface);
+  --sidebar-foreground: var(--vg-bg);
+  --sidebar-primary: var(--vg-primary-light);
+  --sidebar-primary-foreground: var(--vg-light-surface);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--vg-bg);
+  --sidebar-border: var(--vg-light-border);
+  --sidebar-ring: var(--vg-primary-light);
+}
+
+/* Dark mode: the default. Neon green on near-black with a green cast. */
+.dark {
+  color-scheme: dark;
+  --vg-primary: var(--vg-primary-dark);
+
+  --background: var(--vg-bg);
+  --foreground: var(--vg-text);
+  --card: var(--vg-surface);
+  --card-foreground: var(--vg-text);
+  --popover: var(--vg-surface);
+  --popover-foreground: var(--vg-text);
+  --primary: var(--vg-primary-dark);
+  --primary-foreground: var(--vg-bg);
+  --secondary: color-mix(in oklab, var(--vg-surface), var(--vg-text) 8%);
+  --secondary-foreground: var(--vg-text);
+  --muted: color-mix(in oklab, var(--vg-surface), var(--vg-text) 5%);
+  --muted-foreground: var(--vg-muted);
+  --accent: color-mix(in oklab, var(--vg-surface), var(--vg-primary-dark) 12%);
+  --accent-foreground: var(--vg-text);
+  --destructive: var(--vg-danger);
+  --border: color-mix(in oklab, var(--vg-primary-dark) 16%, transparent);
+  --input: color-mix(in oklab, var(--vg-text) 14%, transparent);
+  --ring: var(--vg-accent-2);
+  --chart-1: var(--vg-primary-dark);
+  --chart-2: var(--vg-accent-2);
+  --chart-3: var(--vg-accent);
+  --chart-4: var(--vg-muted);
+  --chart-5: var(--vg-danger);
+  --sidebar: var(--vg-bg);
+  --sidebar-foreground: var(--vg-text);
+  --sidebar-primary: var(--vg-primary-dark);
+  --sidebar-primary-foreground: var(--vg-bg);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--vg-text);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--vg-accent-2);
+}
+
+@theme inline {
+  --font-sans: var(--vg-font-sans);
+  --font-mono: var(--vg-font-mono);
+  --font-heading: var(--vg-font-mono);
+
+  /* Brand colors, usable as bg-vg-primary, text-vg-accent-2, and so on. */
+  --color-vg-bg: var(--vg-bg);
+  --color-vg-surface: var(--vg-surface);
+  --color-vg-text: var(--vg-text);
+  --color-vg-muted: var(--vg-muted);
+  --color-vg-primary: var(--vg-primary);
+  --color-vg-primary-dark: var(--vg-primary-dark);
+  --color-vg-primary-light: var(--vg-primary-light);
+  --color-vg-accent: var(--vg-accent);
+  --color-vg-accent-2: var(--vg-accent-2);
+  --color-vg-danger: var(--vg-danger);
+
+  /* shadcn semantic colors. */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--vg-primary) 35%, transparent);
+  }
+}
+
+/* Scanlines over a faint grid. Landing hero only; it fades out toward the bottom. */
+@utility vg-hero-texture {
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      color-mix(in oklab, var(--vg-primary) 5%, transparent) 3px 4px
+    ),
+    linear-gradient(color-mix(in oklab, var(--vg-primary) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--vg-primary) 7%, transparent) 1px,
+      transparent 1px
+    );
+  background-size:
+    100% 4px,
+    48px 48px,
+    48px 48px;
+  mask-image: radial-gradient(ellipse at 50% 0%, black 30%, transparent 75%);
+}
+
+/* Neon text glow, meant for dark mode headings only. */
+@utility vg-glow {
+  text-shadow: 0 0 24px color-mix(in oklab, var(--vg-primary) 45%, transparent);
+}

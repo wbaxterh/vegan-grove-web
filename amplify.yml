@@ -1,0 +1,20 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        # Amplify only exposes env vars to the build shell; allowlist the public ones into
+        # .env.production so `next build` can inline them. Never add secrets to this grep.
+        - env | grep -e NEXT_PUBLIC_ -e SESSION_ >> .env.production || true
+        - npm ci
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+      - .next/cache/**/*
