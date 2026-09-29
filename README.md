@@ -55,12 +55,12 @@ cp .env.example .env.local       # the dev defaults work against a local API on 
 npm run dev                      # next dev --turbopack, http://localhost:3000
 npm run validate                 # biome check, tsc --noEmit, next build
 npx playwright install chromium  # once, then:
-npm run test:e2e                 # Playwright smoke against the dev server
+npm run test:e2e                 # Playwright against a mock API, see tests/fixtures
 ```
 
 The site expects `vegan-grove-api` at `NEXT_PUBLIC_API_BASE_URL` (default `http://localhost:4000/api`) and runs without it. Husky runs Biome on staged code and `secretlint` on every staged file.
 
-Playwright starts its own dev server on port 3000 and reuses one that is already running; set `PLAYWRIGHT_PORT` when something else owns that port. New shadcn components come from `npx shadcn@latest add <name>`, not from hand-written files, so upgrades stay clean.
+Playwright starts two servers of its own: the mock API on port 4010 (`MOCK_API_PORT`) and a Next dev server on port 3000 (`PLAYWRIGHT_PORT`) pointed at it. It never reuses a dev server you started by hand, because that one points at a different API. New shadcn components come from `npx shadcn@latest add <name>`, not from hand-written files, so upgrades stay clean.
 
 ## Scripts
 
@@ -73,7 +73,7 @@ Playwright starts its own dev server on port 3000 and reuses one that is already
 | `npm run lint` | `biome check .` |
 | `npm run lint:fix` | `biome check --write .` |
 | `npm run typecheck` | `tsc --noEmit` |
-| `npm run test:e2e` | Playwright smoke in chromium: home renders, the map container mounts, `/app/feed` redirects to `/login?next=`, security headers are present |
+| `npm run test:e2e` | Playwright in chromium against a mock of the API (`tests/fixtures/mock-api.mjs`) that serves fixtures in the API's real envelopes: home, the map container, a marker from `{ items }`, a detail page from `{ place }`, a 404 for an unknown slug, the `/app` redirect, security headers |
 | `npm run validate` | lint, typecheck, build: the CI contract and the PR gate (Playwright stays separate) |
 | `npm run prepare` | installs the husky hooks |
 
