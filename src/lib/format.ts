@@ -32,6 +32,25 @@ export function formatDateRange(startsAt: string, endsAt: string): string {
   return `${dateTime.format(start)} to ${dateTime.format(end)}`;
 }
 
+/**
+ * Splits an hours string into display lines. OSM `opening_hours` separates rules with `;`
+ * and hand-entered hours often use newlines; the rules themselves are left as written.
+ */
+export function hoursLines(hours: string | null | undefined): string[] {
+  if (!hours) return [];
+  return hours
+    .split(/;|\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+/** `tel:` href for a display phone number: keeps digits and a leading plus, drops the rest. */
+export function telHref(phone: string): string {
+  const trimmed = phone.trim();
+  const digits = trimmed.replace(/\D/g, '');
+  return `tel:${trimmed.startsWith('+') ? '+' : ''}${digits}`;
+}
+
 export type Paragraph = { id: number; text: string };
 
 /**

@@ -35,6 +35,7 @@ export const AREA_LABELS: Record<Area, string> = {
 
 export type PlaceType =
   | 'sanctuary'
+  | 'garden'
   | 'restaurant'
   | 'cafe'
   | 'grocery'
@@ -47,7 +48,11 @@ export type VeganLevel = 'full' | 'options';
 // The API serializes locations as { lng, lat } (GeoJSON stays inside the database).
 export type GeoPoint = { lng: number; lat: number };
 
-export type PlaceSource = 'osm' | 'user' | 'curated';
+/**
+ * Provenance id (spec section 9): `osm`, `curated`, `user`, or a namespaced ingest source such
+ * as `bot:grokbot`. Only `osm` changes what the site renders (the ODbL attribution).
+ */
+export type PlaceSource = string;
 
 export type Place = {
   id: string;
@@ -56,17 +61,27 @@ export type Place = {
   slug: string;
   type: PlaceType;
   veganLevel: VeganLevel;
+  /** Set at import for places with an OSM brand tag. Hidden by default, never removed. */
+  chain?: boolean;
   location: GeoPoint;
   address: string;
   city: string;
+  postcode?: string;
   area: Area;
   website?: string;
-  hours?: string;
+  phone?: string;
+  /** Free text, usually OSM `opening_hours` syntax; `;` and newlines separate rules. */
+  hours?: string | null;
   tags: string[];
   description: string;
   photoKeys: string[];
   ratingAvg: number;
   reviewCount: number;
+};
+
+/** The slim shape `GET /api/places/map-pins` returns: enough to draw and label a marker. */
+export type MapPin = Pick<Place, 'id' | 'slug' | 'name' | 'type' | 'veganLevel' | 'location'> & {
+  chain: boolean;
 };
 
 export type EventType =

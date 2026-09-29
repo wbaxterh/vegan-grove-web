@@ -1,56 +1,104 @@
 'use client';
 
-import 'maplibre-gl/dist/maplibre-gl.css';
 import { Locate } from 'lucide-react';
-import { setWorkerUrl } from 'maplibre-gl';
-import Link from 'next/link';
-import { useCallback, useRef, useState } from 'react';
-import { Map as MapLibreMap, type MapRef, Marker, NavigationControl } from 'react-map-gl/maplibre';
+import { useCallback, useEffect, useRef } from 'react';
+import {
+  type MapLayerMouseEvent,
+  Map as MapLibreMap,
+  type MapRef,
+  Marker,
+  NavigationControl,
+  Popup,
+} from 'react-map-gl/maplibre';
 import { Button } from '@/components/ui/button';
-import { apiFetch, type ListResponse } from '@/lib/api';
-import type { Place } from '@/lib/types';
-import { cn } from '@/lib/utils';
+import { PLACE_TYPE_LABELS, VEGAN_LEVEL_LABELS } from '@/lib/labels';
+import type { MapPin, Place } from '@/lib/types';
+import { INITIAL_VIEW, STYLE_URL } from './maplibre';
+import { MarkerGlyph, markerClassName } from './place-marker';
+import { PlacePopup } from './place-popup';
 
-// Self-hosted worker (see scripts/copy-maplibre-worker.mjs): the bundled one
-// cannot resolve its shared chunk under Turbopack's hashed file names.
-setWorkerUrl('/maplibre/maplibre-gl-worker.mjs');
+export type PinsStatus = 'idle' | 'loading' | 'ready' | 'unavailable';
 
-/** OpenFreeMap: no API key, no cookies, no per-user data on the tile server. */
-const STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
+/** A request from the side list to move the camera; `key` makes repeat requests distinct. */
+export type FlyRequest = { lng: number; lat: number; key: number };
 
-/** Long Beach, the first grove. Device location never leaves the browser (privacy rule 3). */
-const INITIAL_VIEW = { longitude: -118.19, latitude: 33.83, zoom: 9 };
+export type PlacesMapProps = {
+  pins: MapPin[];
+  status: PinsStatus;
+  selected: { pin: MapPin; place?: Place } | null;
+  onSelect: (pin: MapPin | null) => void;
+  /** Called with `w,s,e,n` on load and, debounced, after every move. */
+  onBboxChange: (bbox: string) => void;
+  flyTo: FlyRequest | null;
+};
 
-type Status = 'idle' | 'loading' | 'ready' | 'unavailable';
+const MOVE_DEBOUNCE_MS = 300;
+const Z_SELECTED = { zIndex: 2 };
+const Z_DEFAULT = { zIndex: 0 };
 
-export default function PlacesMap() {
+function bboxOf(map: MapRef): string {
+  const bounds = map.getBounds();
+  return [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]
+    .map((n) => n.toFixed(5))
+    .join(',');
+}
+
+export default function PlacesMap({
+  pins,
+  status,
+  selected,
+  onSelect,
+  onBboxChange,
+  flyTo,
+}: PlacesMapProps) {
   const mapRef = useRef<MapRef>(null);
-  const requestId = useRef(0);
-  const [places, setPlaces] = useState<Place[]>([]);
-  const [status, setStatus] = useState<Status>('idle');
+  const moveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const announced = useRef(false);
 
-  const loadVisible = useCallback(async () => {
+  const publishBbox = useCallback(() => {
     const map = mapRef.current;
     if (!map) return;
-    const bounds = map.getBounds();
-    const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]
-      .map((n) => n.toFixed(5))
-      .join(',');
+    announced.current = true;
+    onBboxChange(bboxOf(map));
+  }, [onBboxChange]);
 
-    requestId.current += 1;
-    const id = requestId.current;
-    setStatus('loading');
-    try {
-      const data = await apiFetch<ListResponse<Place>>(`/places?bbox=${bbox}`);
-      if (id !== requestId.current) return;
-      setPlaces(data.items);
-      setStatus('ready');
-    } catch {
-      if (id !== requestId.current) return;
-      setPlaces([]);
-      setStatus('unavailable');
-    }
+  const onMoveEnd = useCallback(() => {
+    if (moveTimer.current) clearTimeout(moveTimer.current);
+    moveTimer.current = setTimeout(publishBbox, MOVE_DEBOUNCE_MS);
+  }, [publishBbox]);
+
+  // A style that fails to load never fires `load`; the list should still work without tiles.
+  const onError = useCallback(() => {
+    if (!announced.current) publishBbox();
+  }, [publishBbox]);
+
+  useEffect(() => {
+    return () => {
+      if (moveTimer.current) clearTimeout(moveTimer.current);
+    };
   }, []);
+
+  useEffect(() => {
+    if (!flyTo) return;
+    const map = mapRef.current;
+    if (!map) return;
+    map.flyTo({
+      center: [flyTo.lng, flyTo.lat],
+      zoom: Math.max(map.getZoom(), 13),
+      duration: 700,
+    });
+  }, [flyTo]);
+
+  // Marker clicks bubble up to the map as well, so a click that started on a pin is not a
+  // request to close the popup.
+  const onMapClick = useCallback(
+    (event: MapLayerMouseEvent) => {
+      const target = event.originalEvent.target;
+      if (target instanceof Element && target.closest('.maplibregl-marker')) return;
+      onSelect(null);
+    },
+    [onSelect],
+  );
 
   const locate = () => {
     if (!('geolocation' in navigator)) return;
@@ -70,45 +118,72 @@ export default function PlacesMap() {
         mapStyle={STYLE_URL}
         style={{ width: '100%', height: '100%' }}
         attributionControl={{ compact: true }}
-        onLoad={loadVisible}
-        onMoveEnd={loadVisible}
+        onLoad={publishBbox}
+        onError={onError}
+        onMoveEnd={onMoveEnd}
+        onClick={onMapClick}
       >
         <NavigationControl position="top-right" showCompass={false} />
-        {places.map((place) => (
-          <Marker
-            key={place.id}
-            longitude={place.location.lng}
-            latitude={place.location.lat}
-            anchor="center"
+        {pins.map((pin) => {
+          const isSelected = pin.id === selected?.pin.id;
+          return (
+            <Marker
+              key={pin.id}
+              longitude={pin.location.lng}
+              latitude={pin.location.lat}
+              anchor="center"
+              style={isSelected ? Z_SELECTED : Z_DEFAULT}
+            >
+              <button
+                type="button"
+                data-place-marker={pin.id}
+                aria-label={`${pin.name}, ${VEGAN_LEVEL_LABELS[pin.veganLevel].toLowerCase()} ${PLACE_TYPE_LABELS[pin.type].toLowerCase()}`}
+                aria-expanded={isSelected}
+                title={pin.name}
+                onClick={() => onSelect(isSelected ? null : pin)}
+                className={markerClassName(pin.type, pin.veganLevel, isSelected)}
+              >
+                <MarkerGlyph type={pin.type} />
+              </button>
+            </Marker>
+          );
+        })}
+        {selected ? (
+          <Popup
+            key={selected.pin.id}
+            longitude={selected.pin.location.lng}
+            latitude={selected.pin.location.lat}
+            offset={16}
+            maxWidth="none"
+            closeButton={false}
+            closeOnClick={false}
+            focusAfterOpen={false}
           >
-            <Link
-              href={`/places/${place.slug}`}
-              title={place.name}
-              aria-label={place.name}
-              className={cn(
-                'block size-3.5 rounded-full ring-2 ring-vg-bg shadow-[0_0_12px_var(--vg-primary)]',
-                place.veganLevel === 'full' ? 'bg-vg-primary' : 'bg-vg-accent-2',
-              )}
-            />
-          </Marker>
-        ))}
+            <PlacePopup pin={selected.pin} place={selected.place} onClose={() => onSelect(null)} />
+          </Popup>
+        ) : null}
       </MapLibreMap>
 
-      <div className="pointer-events-none absolute inset-x-3 bottom-3 flex items-end justify-between gap-3">
+      {/* Top-left: the only corner the zoom control and the (initially expanded) attribution leave free. */}
+      <div className="pointer-events-none absolute top-3 left-3 flex max-w-[calc(100%-4rem)] flex-wrap items-center gap-2">
+        <Button
+          className="pointer-events-auto bg-background/90 backdrop-blur hover:bg-background dark:bg-background/90 dark:hover:bg-background"
+          variant="outline"
+          size="sm"
+          onClick={locate}
+        >
+          <Locate data-icon="inline-start" aria-hidden="true" />
+          Near me
+        </Button>
         <p
           role="status"
           className="rounded-md border border-border bg-background/90 px-2.5 py-1 font-mono text-xs text-muted-foreground backdrop-blur"
         >
           {status === 'loading' && 'Searching this area'}
-          {status === 'ready' &&
-            `${places.length} ${places.length === 1 ? 'place' : 'places'} here`}
+          {status === 'ready' && `${pins.length} ${pins.length === 1 ? 'place' : 'places'} here`}
           {status === 'unavailable' && 'Places are unavailable: the API did not answer'}
           {status === 'idle' && 'Move the map to search'}
         </p>
-        <Button className="pointer-events-auto" variant="outline" size="sm" onClick={locate}>
-          <Locate data-icon="inline-start" aria-hidden="true" />
-          Near me
-        </Button>
       </div>
     </div>
   );

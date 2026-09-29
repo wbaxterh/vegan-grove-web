@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import type { PlacesMapProps } from './places-map';
 
 /**
  * MapLibre touches `window` at import time, so the map is a browser-only island. The wrapper
@@ -15,13 +16,13 @@ const PlacesMap = dynamic(() => import('./places-map'), {
   ),
 });
 
-export function PlacesMapIsland() {
+export function PlacesMapIsland(props: PlacesMapProps) {
   return (
     <div
       data-testid="places-map"
       className="h-[60vh] min-h-[420px] w-full overflow-hidden rounded-xl border border-border bg-card"
     >
-      <PlacesMap />
+      <PlacesMap {...props} />
     </div>
   );
 }

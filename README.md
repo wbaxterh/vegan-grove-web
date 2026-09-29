@@ -73,7 +73,7 @@ Playwright starts two servers of its own: the mock API on port 4010 (`MOCK_API_P
 | `npm run lint` | `biome check .` |
 | `npm run lint:fix` | `biome check --write .` |
 | `npm run typecheck` | `tsc --noEmit` |
-| `npm run test:e2e` | Playwright in chromium against a mock of the API (`tests/fixtures/mock-api.mjs`) that serves fixtures in the API's real envelopes: home, the map container, a marker from `{ items }`, a detail page from `{ place }`, a 404 for an unknown slug, the `/app` redirect, security headers |
+| `npm run test:e2e` | Playwright in chromium against a mock of the API (`tests/fixtures/mock-api.mjs`) that serves fixtures in the API's real envelopes and honors the places query params: home, the map container, markers from `map-pins`, the vegan-level, type, and chain filters and their URL round-trip, the marker popup and the side list, a detail page from `{ place }` with phone, hours, and the map preview, a 404 for an unknown slug, the `/app` redirect, security headers |
 | `npm run validate` | lint, typecheck, build: the CI contract and the PR gate (Playwright stays separate) |
 | `npm run prepare` | installs the husky hooks |
 

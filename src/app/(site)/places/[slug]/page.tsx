@@ -1,11 +1,14 @@
-import { ExternalLink, MapPin } from 'lucide-react';
+import { Clock, ExternalLink, MapPin, Phone } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ApiUnavailable } from '@/components/empty-state';
+import { PlaceMiniMapIsland } from '@/components/places/place-mini-map-island';
+import { PlaceTypeIcon } from '@/components/places/place-type-icon';
 import { Screen } from '@/components/screen';
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
-import { PLACE_TYPE_LABELS, VEGAN_LEVEL_LABELS } from '@/lib/labels';
+import { hoursLines, telHref } from '@/lib/format';
+import { PLACE_TYPE_BLURBS, PLACE_TYPE_LABELS, VEGAN_LEVEL_LABELS } from '@/lib/labels';
 import { loadOne } from '@/lib/loaders';
 import { AREA_LABELS, type Place } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -33,6 +36,9 @@ export default async function PlacePage({ params }: Props) {
   }
   // `osm` is a provenance marker, not a topic; provenance is shown as attribution below.
   const topicTags = place.tags.filter((tag) => tag !== 'osm');
+  const hours = hoursLines(place.hours);
+  const blurb = PLACE_TYPE_BLURBS[place.type];
+  const cityLine = [place.city, place.postcode].filter(Boolean).join(' ');
 
   return (
     <Screen
@@ -41,10 +47,14 @@ export default async function PlacePage({ params }: Props) {
       context={
         <div className="flex flex-wrap gap-2">
           <Badge>{VEGAN_LEVEL_LABELS[place.veganLevel]}</Badge>
-          <Badge variant="outline">{PLACE_TYPE_LABELS[place.type]}</Badge>
+          <Badge variant="outline">
+            <PlaceTypeIcon type={place.type} />
+            {PLACE_TYPE_LABELS[place.type]}
+          </Badge>
           {place.area !== 'other' ? (
             <Badge variant="outline">{AREA_LABELS[place.area]}</Badge>
           ) : null}
+          {place.chain ? <Badge variant="outline">Chain</Badge> : null}
         </div>
       }
       action={
@@ -59,6 +69,12 @@ export default async function PlacePage({ params }: Props) {
               <ExternalLink data-icon="inline-end" aria-hidden="true" />
             </a>
           ) : null}
+          {place.phone ? (
+            <a href={telHref(place.phone)} className={cn(buttonVariants({ variant: 'outline' }))}>
+              <Phone data-icon="inline-start" aria-hidden="true" />
+              Call
+            </a>
+          ) : null}
           <Link href="/login?next=/app/feed" className={cn(buttonVariants())}>
             Log in to review
           </Link>
@@ -66,16 +82,40 @@ export default async function PlacePage({ params }: Props) {
       }
       support={
         <>
+          <PlaceMiniMapIsland
+            name={place.name}
+            lng={place.location.lng}
+            lat={place.location.lat}
+            type={place.type}
+            veganLevel={place.veganLevel}
+          />
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-vg-primary">Details</p>
           <p className="flex items-start gap-2">
             <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
             <span>
               {place.address}
               <br />
-              {place.city}
+              {cityLine}
             </span>
           </p>
-          {place.hours ? <p className="text-muted-foreground">{place.hours}</p> : null}
+          {place.phone ? (
+            <p className="flex items-start gap-2">
+              <Phone className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+              <a href={telHref(place.phone)} className="hover:underline">
+                {place.phone}
+              </a>
+            </p>
+          ) : null}
+          {hours.length > 0 ? (
+            <div className="flex items-start gap-2">
+              <Clock className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+              <ul className="space-y-0.5 font-mono text-xs text-muted-foreground">
+                {hours.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           <p className="text-muted-foreground">
             {place.reviewCount === 0
               ? 'No reviews yet.'
@@ -85,6 +125,11 @@ export default async function PlacePage({ params }: Props) {
       }
     >
       <p className="max-w-3xl leading-relaxed">{place.description}</p>
+      {blurb ? (
+        <p className="max-w-3xl rounded-lg border border-border bg-card p-4 text-sm leading-relaxed text-muted-foreground">
+          {blurb}
+        </p>
+      ) : null}
       {topicTags.length > 0 ? (
         <ul className="flex flex-wrap gap-2">
           {topicTags.map((tag) => (

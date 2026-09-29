@@ -21,7 +21,7 @@ const PILLARS = [
     icon: MapPin,
     title: 'Places',
     description:
-      'Sanctuaries, restaurants, cafes, groceries, and shops across Southern California. Seeded from OpenStreetMap and curated by members.',
+      'Sanctuaries, community gardens, restaurants, cafes, groceries, and shops across Southern California. Seeded from OpenStreetMap and curated by members.',
     cta: 'Open the map',
   },
   {
