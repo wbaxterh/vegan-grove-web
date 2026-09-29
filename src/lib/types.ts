@@ -47,8 +47,11 @@ export type VeganLevel = 'full' | 'options';
 // The API serializes locations as { lng, lat } (GeoJSON stays inside the database).
 export type GeoPoint = { lng: number; lat: number };
 
+export type PlaceSource = 'osm' | 'user' | 'curated';
+
 export type Place = {
   id: string;
+  source?: PlaceSource;
   name: string;
   slug: string;
   type: PlaceType;

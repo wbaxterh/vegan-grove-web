@@ -31,6 +31,8 @@ export default async function PlacePage({ params }: Props) {
       </Screen>
     );
   }
+  // `osm` is a provenance marker, not a topic; provenance is shown as attribution below.
+  const topicTags = place.tags.filter((tag) => tag !== 'osm');
 
   return (
     <Screen
@@ -40,7 +42,9 @@ export default async function PlacePage({ params }: Props) {
         <div className="flex flex-wrap gap-2">
           <Badge>{VEGAN_LEVEL_LABELS[place.veganLevel]}</Badge>
           <Badge variant="outline">{PLACE_TYPE_LABELS[place.type]}</Badge>
-          <Badge variant="outline">{AREA_LABELS[place.area]}</Badge>
+          {place.area !== 'other' ? (
+            <Badge variant="outline">{AREA_LABELS[place.area]}</Badge>
+          ) : null}
         </div>
       }
       action={
@@ -81,9 +85,9 @@ export default async function PlacePage({ params }: Props) {
       }
     >
       <p className="max-w-3xl leading-relaxed">{place.description}</p>
-      {place.tags.length > 0 ? (
+      {topicTags.length > 0 ? (
         <ul className="flex flex-wrap gap-2">
-          {place.tags.map((tag) => (
+          {topicTags.map((tag) => (
             <li key={tag}>
               <Badge variant="secondary" className="font-mono">
                 {tag}
@@ -91,6 +95,15 @@ export default async function PlacePage({ params }: Props) {
             </li>
           ))}
         </ul>
+      ) : null}
+      {place.source === 'osm' ? (
+        <p className="text-muted-foreground text-xs">
+          Data from{' '}
+          <a href="https://www.openstreetmap.org/copyright" rel="noreferrer" className="underline">
+            OpenStreetMap contributors
+          </a>
+          , ODbL. Corrections are welcome through the app.
+        </p>
       ) : null}
     </Screen>
   );
