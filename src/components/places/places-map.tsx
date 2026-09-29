@@ -77,8 +77,8 @@ export default function PlacesMap() {
         {places.map((place) => (
           <Marker
             key={place.id}
-            longitude={place.location.coordinates[0]}
-            latitude={place.location.coordinates[1]}
+            longitude={place.location.lng}
+            latitude={place.location.lat}
             anchor="center"
           >
             <Link

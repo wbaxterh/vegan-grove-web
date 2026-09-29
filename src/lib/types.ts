@@ -44,7 +44,8 @@ export type PlaceType =
 
 export type VeganLevel = 'full' | 'options';
 
-export type GeoPoint = { type: 'Point'; coordinates: [number, number] };
+// The API serializes locations as { lng, lat } (GeoJSON stays inside the database).
+export type GeoPoint = { lng: number; lat: number };
 
 export type Place = {
   id: string;
