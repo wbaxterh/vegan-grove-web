@@ -14,7 +14,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const item = await loadOne<MediaItem>(`/media/${encodeURIComponent(slug)}`);
+  const item = await loadOne<MediaItem>(`/media/${encodeURIComponent(slug)}`, 'media');
   return item
     ? { title: item.title, description: item.synopsis.slice(0, 160) }
     : { title: 'Media' };
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function MediaItemPage({ params }: Props) {
   const { slug } = await params;
-  const item = await loadOne<MediaItem>(`/media/${encodeURIComponent(slug)}`);
+  const item = await loadOne<MediaItem>(`/media/${encodeURIComponent(slug)}`, 'media');
 
   if (!item) {
     return (

@@ -14,7 +14,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const event = await loadOne<GroveEvent>(`/events/${encodeURIComponent(slug)}`);
+  const event = await loadOne<GroveEvent>(`/events/${encodeURIComponent(slug)}`, 'event');
   return event
     ? { title: event.title, description: event.description.slice(0, 160) }
     : { title: 'Event' };
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function EventPage({ params }: Props) {
   const { slug } = await params;
-  const event = await loadOne<GroveEvent>(`/events/${encodeURIComponent(slug)}`);
+  const event = await loadOne<GroveEvent>(`/events/${encodeURIComponent(slug)}`, 'event');
 
   if (!event) {
     return (

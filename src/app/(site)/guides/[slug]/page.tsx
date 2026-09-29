@@ -10,13 +10,13 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const guide = await loadOne<Guide>(`/guides/${encodeURIComponent(slug)}`);
+  const guide = await loadOne<Guide>(`/guides/${encodeURIComponent(slug)}`, 'guide');
   return guide ? { title: guide.title } : { title: 'Guide' };
 }
 
 export default async function GuidePage({ params }: Props) {
   const { slug } = await params;
-  const guide = await loadOne<Guide>(`/guides/${encodeURIComponent(slug)}`);
+  const guide = await loadOne<Guide>(`/guides/${encodeURIComponent(slug)}`, 'guide');
 
   if (!guide) {
     return (

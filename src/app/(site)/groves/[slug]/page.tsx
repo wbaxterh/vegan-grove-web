@@ -12,7 +12,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const grove = await loadOne<Grove>(`/groves/${encodeURIComponent(slug)}`);
+  const grove = await loadOne<Grove>(`/groves/${encodeURIComponent(slug)}`, 'grove');
   return grove
     ? { title: grove.name, description: grove.description.slice(0, 160) }
     : { title: 'Grove' };
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function GrovePage({ params }: Props) {
   const { slug } = await params;
-  const grove = await loadOne<Grove>(`/groves/${encodeURIComponent(slug)}`);
+  const grove = await loadOne<Grove>(`/groves/${encodeURIComponent(slug)}`, 'grove');
 
   if (!grove) {
     return (

@@ -14,7 +14,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const place = await loadOne<Place>(`/places/${encodeURIComponent(slug)}`);
+  const place = await loadOne<Place>(`/places/${encodeURIComponent(slug)}`, 'place');
   return place
     ? { title: place.name, description: place.description.slice(0, 160) }
     : { title: 'Place' };
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PlacePage({ params }: Props) {
   const { slug } = await params;
-  const place = await loadOne<Place>(`/places/${encodeURIComponent(slug)}`);
+  const place = await loadOne<Place>(`/places/${encodeURIComponent(slug)}`, 'place');
 
   if (!place) {
     return (

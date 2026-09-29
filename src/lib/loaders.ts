@@ -22,10 +22,23 @@ export async function loadList<T>(path: string): Promise<LoadedList<T>> {
   }
 }
 
-/** Resolves to the resource, calls `notFound()` on a 404, and `null` when the API is down. */
-export async function loadOne<T>(path: string): Promise<T | null> {
+/**
+ * Resolves to the resource, calls `notFound()` on a 404, and `null` when the API is down.
+ * Single resources come wrapped in a named envelope (`{ place: {...} }`, `{ event: {...} }`);
+ * `key` names it. A bare object is accepted too, so a route that answers unwrapped still works.
+ */
+export async function loadOne<T extends { id: string }>(
+  path: string,
+  key: string,
+): Promise<T | null> {
   try {
-    return await apiFetch<T>(path, { next: { revalidate: PUBLIC_REVALIDATE_SECONDS } });
+    const data = await apiFetch<Record<string, unknown>>(path, {
+      next: { revalidate: PUBLIC_REVALIDATE_SECONDS },
+    });
+    const wrapped = data[key];
+    if (wrapped && typeof wrapped === 'object') return wrapped as T;
+    if (typeof data.id === 'string') return data as unknown as T;
+    return null;
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) notFound();
     return null;
