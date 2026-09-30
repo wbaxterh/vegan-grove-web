@@ -84,6 +84,9 @@ test('vegan options and chains are opt-in and land in the URL', async ({ page })
 
   const list = listOf(page);
   await expect(list.getByText('Chain', { exact: true })).toBeVisible();
+  // Eateries keep their level badge; sanctuaries and gardens never show one.
+  await expect(list.getByText('Vegan options', { exact: true })).toBeVisible();
+  await expect(list.getByText('Fully vegan', { exact: true })).toHaveCount(0);
 });
 
 test('clicking a marker opens a popup with the place', async ({ page }) => {
@@ -94,7 +97,8 @@ test('clicking a marker opens a popup with the place', async ({ page }) => {
   const popup = page.getByTestId('place-popup');
   await expect(popup).toBeVisible();
   await expect(popup).toContainText('Fixture Sanctuary');
-  await expect(popup).toContainText('Fully vegan');
+  // Sanctuaries and gardens are not restaurants, so no vegan-level badge.
+  await expect(popup).not.toContainText('Fully vegan');
   await expect(popup).toContainText('1 Fixture Way');
   await expect(popup).toContainText('Sa-Su 10:00-16:00');
   await expect(popup.getByRole('link', { name: 'View place' })).toHaveAttribute(
