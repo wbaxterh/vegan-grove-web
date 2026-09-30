@@ -79,10 +79,10 @@ export default async function EventPage({ params }: Props) {
           <p>
             {hostHref ? (
               <Link href={hostHref} className="text-vg-accent-2 hover:underline">
-                {event.hostName ?? 'A grove'}
+                {event.host?.name ?? event.hostName ?? 'A grove'}
               </Link>
             ) : (
-              (event.hostName ?? 'An organization')
+              (event.host?.name ?? event.hostName ?? 'An organization')
             )}
           </p>
         </>

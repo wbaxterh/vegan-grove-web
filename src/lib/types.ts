@@ -96,6 +96,14 @@ export type EventType =
 
 export type EventVisibility = 'public' | 'grove' | 'friends';
 
+export type EventHost = {
+  type: 'organization' | 'grove';
+  id: string;
+  name: string;
+  slug: string;
+  verified?: boolean;
+};
+
 export type GroveEvent = {
   id: string;
   title: string;
@@ -108,7 +116,9 @@ export type GroveEvent = {
   address?: string;
   detailsAfterRsvp: boolean;
   hostType: 'grove' | 'organization';
+  /** Kept for older fixtures; the API sends `host`. */
   hostName?: string;
+  host?: EventHost | null;
   hostSlug?: string;
   description: string;
   coverKey?: string;

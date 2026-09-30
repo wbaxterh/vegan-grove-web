@@ -25,7 +25,9 @@ export function EventCard({ event }: { event: GroveEvent }) {
       </CardHeader>
       <CardContent className="text-sm text-muted-foreground">
         <p>{event.detailsAfterRsvp ? 'Location shared after RSVP' : event.venueName}</p>
-        {event.hostName ? <p>Hosted by {event.hostName}</p> : null}
+        {(event.host?.name ?? event.hostName) ? (
+          <p>Hosted by {event.host?.name ?? event.hostName}</p>
+        ) : null}
         <p className="mt-2 font-mono text-xs">{going}</p>
       </CardContent>
     </Card>
