@@ -8,7 +8,12 @@ import { Screen } from '@/components/screen';
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
 import { hoursLines, telHref } from '@/lib/format';
-import { PLACE_TYPE_BLURBS, PLACE_TYPE_LABELS, VEGAN_LEVEL_LABELS } from '@/lib/labels';
+import {
+  PLACE_TYPE_BLURBS,
+  PLACE_TYPE_LABELS,
+  showsVeganLevel,
+  VEGAN_LEVEL_LABELS,
+} from '@/lib/labels';
 import { loadOne } from '@/lib/loaders';
 import { AREA_LABELS, type Place } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -46,7 +51,9 @@ export default async function PlacePage({ params }: Props) {
       title={place.name}
       context={
         <div className="flex flex-wrap gap-2">
-          <Badge>{VEGAN_LEVEL_LABELS[place.veganLevel]}</Badge>
+          {showsVeganLevel(place.type) ? (
+            <Badge>{VEGAN_LEVEL_LABELS[place.veganLevel]}</Badge>
+          ) : null}
           <Badge variant="outline">
             <PlaceTypeIcon type={place.type} />
             {PLACE_TYPE_LABELS[place.type]}

@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
 import { hoursLines } from '@/lib/format';
-import { PLACE_TYPE_LABELS, VEGAN_LEVEL_LABELS } from '@/lib/labels';
+import { PLACE_TYPE_LABELS, showsVeganLevel, VEGAN_LEVEL_LABELS } from '@/lib/labels';
 import type { MapPin, Place } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { PlaceTypeIcon } from './place-type-icon';
@@ -49,7 +49,7 @@ export function PlacePopup({ pin, place, onClose }: PlacePopupProps) {
         </button>
       </div>
       <div className="mt-2 flex flex-wrap gap-1.5">
-        <Badge>{VEGAN_LEVEL_LABELS[pin.veganLevel]}</Badge>
+        {showsVeganLevel(pin.type) ? <Badge>{VEGAN_LEVEL_LABELS[pin.veganLevel]}</Badge> : null}
         <Badge variant="outline">
           <PlaceTypeIcon type={pin.type} />
           {PLACE_TYPE_LABELS[pin.type]}

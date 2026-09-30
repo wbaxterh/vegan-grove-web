@@ -54,3 +54,8 @@ export const MEDIA_KIND_LABELS: Record<MediaKind, string> = {
   talk: 'Talk',
   short: 'Short',
 };
+
+/** Sanctuaries and gardens are not food businesses; a vegan-level badge on them reads as noise. */
+export function showsVeganLevel(type: string): boolean {
+  return type !== 'sanctuary' && type !== 'garden';
+}

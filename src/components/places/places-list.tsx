@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { PLACE_TYPE_LABELS, VEGAN_LEVEL_LABELS } from '@/lib/labels';
+import { PLACE_TYPE_LABELS, showsVeganLevel, VEGAN_LEVEL_LABELS } from '@/lib/labels';
 import type { Place } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { PlaceTypeIcon } from './place-type-icon';
@@ -74,9 +74,11 @@ function PlaceRow({
       <span className="min-w-0 flex-1">
         <span className="block truncate font-medium">{place.name}</span>
         <span className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-          <Badge variant={full ? 'default' : 'secondary'}>
-            {VEGAN_LEVEL_LABELS[place.veganLevel]}
-          </Badge>
+          {showsVeganLevel(place.type) ? (
+            <Badge variant={full ? 'default' : 'secondary'}>
+              {VEGAN_LEVEL_LABELS[place.veganLevel]}
+            </Badge>
+          ) : null}
           <span>{PLACE_TYPE_LABELS[place.type]}</span>
           {place.chain ? <Badge variant="outline">Chain</Badge> : null}
         </span>

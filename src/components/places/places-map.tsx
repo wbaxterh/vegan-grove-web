@@ -11,7 +11,7 @@ import {
   Popup,
 } from 'react-map-gl/maplibre';
 import { Button } from '@/components/ui/button';
-import { PLACE_TYPE_LABELS, VEGAN_LEVEL_LABELS } from '@/lib/labels';
+import { PLACE_TYPE_LABELS, showsVeganLevel, VEGAN_LEVEL_LABELS } from '@/lib/labels';
 import type { MapPin, Place } from '@/lib/types';
 import { INITIAL_VIEW, STYLE_URL } from './maplibre';
 import { MarkerGlyph, markerClassName } from './place-marker';
@@ -137,7 +137,11 @@ export default function PlacesMap({
               <button
                 type="button"
                 data-place-marker={pin.id}
-                aria-label={`${pin.name}, ${VEGAN_LEVEL_LABELS[pin.veganLevel].toLowerCase()} ${PLACE_TYPE_LABELS[pin.type].toLowerCase()}`}
+                aria-label={
+                  showsVeganLevel(pin.type)
+                    ? `${pin.name}, ${VEGAN_LEVEL_LABELS[pin.veganLevel].toLowerCase()} ${PLACE_TYPE_LABELS[pin.type].toLowerCase()}`
+                    : `${pin.name}, ${PLACE_TYPE_LABELS[pin.type].toLowerCase()}`
+                }
                 aria-expanded={isSelected}
                 title={pin.name}
                 onClick={() => onSelect(isSelected ? null : pin)}
