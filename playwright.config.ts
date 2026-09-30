@@ -19,6 +19,9 @@ export default defineConfig({
   timeout: 30_000,
   expect: { timeout: 5_000 },
   fullyParallel: true,
+  // Eight workers on one dev server starve the map tests (markers arrive after the 20 s
+  // budget); four keeps the suite fast and honest about the map, CI already runs lean.
+  workers: process.env.CI ? 2 : 4,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? 'github' : 'list',

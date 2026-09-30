@@ -30,3 +30,16 @@ test('/media falls back to the plain grid when /api/media/home is not there yet'
     expect(restored.ok()).toBe(true);
   }
 });
+
+/**
+ * Warm-up, not a test of behaviour: the map tests run in parallel right after this project,
+ * and the first request to a route in dev mode pays its compile. Paying it here, alone, keeps
+ * the marker timeout in smoke.spec.ts about the map and not about the compiler.
+ */
+test('warms the places route so the parallel map tests start from a compiled page', async ({
+  page,
+}) => {
+  await page.goto('/places');
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(page.locator('.maplibregl-map')).toBeVisible({ timeout: 60_000 });
+});
