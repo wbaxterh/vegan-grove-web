@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import { resolveMediaCdnOrigin } from './src/lib/media-origin';
 
 /**
  * Security headers are computed at build time from the public env, so a staging build and a
@@ -23,7 +24,7 @@ function originOf(value: string | undefined): string | null {
 }
 
 const apiOrigin = originOf(process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000/api');
-const mediaOrigin = originOf(process.env.NEXT_PUBLIC_MEDIA_CDN_ORIGIN);
+const mediaOrigin = originOf(resolveMediaCdnOrigin());
 
 function directive(name: string, ...sources: (string | null | false)[]): string {
   return [name, ...sources.filter((source): source is string => Boolean(source))].join(' ');
