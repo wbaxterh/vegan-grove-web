@@ -11,7 +11,10 @@ export const metadata: Metadata = {
   description: 'Protests, vigils, outreach, potlucks, sanctuary days, and screenings near you.',
 };
 
-export const revalidate = 60;
+// Rendered per request: on Amplify's Lambda the background revalidation of a static page does
+// not reliably finish, and this page sat on an empty list for ten minutes after events landed.
+// The API fetch itself is still cached for 60 seconds by loadList, so the cost is one render.
+export const dynamic = 'force-dynamic';
 
 function EventList({ items, unavailable }: LoadedList<GroveEvent>) {
   if (unavailable) return <ApiUnavailable what="Events" />;
