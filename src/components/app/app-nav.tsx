@@ -1,12 +1,13 @@
 'use client';
 
-import { Bot, MessageSquare, Rss, Settings, UserPlus } from 'lucide-react';
+import { Bookmark, Bot, MessageSquare, Rss, Settings, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 const ITEMS = [
   { href: '/app/feed', label: 'Feed', icon: Rss },
+  { href: '/app/watchlist', label: 'Watchlist', icon: Bookmark },
   { href: '/app/messages', label: 'Messages', icon: MessageSquare },
   { href: '/app/friends', label: 'Friends', icon: UserPlus },
   { href: '/app/companion', label: 'Companion', icon: Bot },

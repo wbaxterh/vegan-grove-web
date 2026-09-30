@@ -128,19 +128,91 @@ export type Grove = {
 
 export type MediaKind = 'documentary' | 'film' | 'series' | 'talk' | 'short';
 
+export type WatchAccess = 'free' | 'subscription' | 'rent' | 'buy' | 'unknown';
+
+export type WatchLink = { provider: string; url: string; access: WatchAccess };
+
+export type MediaActionType = 'petition' | 'donate' | 'pledge' | 'volunteer' | 'guide' | 'learn';
+
+/** A real-world next step attached to a title: "Sign the petition", "Volunteer with ...". */
+export type MediaAction = {
+  label: string;
+  url: string;
+  type: MediaActionType;
+  /** Organisation name as written on its own site. */
+  org?: string | null;
+};
+
+/**
+ * A library entry as the API serializes it (media contract, section 10.1). Clients render
+ * these fields, they never derive them. Image URLs are null until the media CDN exists.
+ */
 export type MediaItem = {
   id: string;
-  title: string;
   slug: string;
+  title: string;
   kind: MediaKind;
-  year: number;
+  year: number | null;
+  /** YYYY-MM-DD. */
+  releaseDate: string | null;
   synopsis: string;
-  posterKey?: string;
-  watchLinks: { provider: string; url: string }[];
-  trailerYoutubeId?: string;
+  tagline: string | null;
+  posterUrl: string | null;
+  backdropUrl: string | null;
+  runtimeMinutes: number | null;
+  contentRating: string | null;
+  originalLanguage: string | null;
+  directors: string[];
+  featuring: string[];
+  genres: string[];
   tags: string[];
+  /** e.g. "graphic footage", "animal death". */
+  contentWarnings: string[];
+  /** TMDB, one decimal. */
+  rating: number | null;
+  ratingCount: number | null;
+  watchLinks: WatchLink[];
+  trailerYoutubeId: string | null;
+  officialSite: string | null;
+  actions: MediaAction[];
+  externalIds: { tmdb?: string; wikidata?: string; imdb?: string };
   featured: boolean;
+  sourceUrl: string | null;
+  createdAt: string;
+  /** Counts only, never who. */
+  stats: { saves: number; moved: number; acted: number };
 };
+
+export type MediaReaction = 'moved' | 'acted';
+
+/** Only on `GET /api/media/:slug` when the request carries a valid session. */
+export type MediaViewer = { saved: boolean; reactions: MediaReaction[] };
+
+/** One shelf on the library page: an editorial collection or an automatic row. */
+export type MediaRow = {
+  /** 'collection:start-here' | 'auto:free' | 'auto:tag:ethics' */
+  key: string;
+  name: string;
+  description: string | null;
+  kind: 'collection' | 'auto';
+  /** Collection slug, for the "See all" link. */
+  slug: string | null;
+  /** At most 12. */
+  items: MediaItem[];
+};
+
+export type MediaCollection = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  order: number;
+  /** Ordered as the editor set them. */
+  items: MediaItem[];
+};
+
+/** `GET /api/media/home`. */
+export type MediaHome = { hero: MediaItem[]; rows: MediaRow[] };
 
 export type GuideCategory =
   | 'outreach'
