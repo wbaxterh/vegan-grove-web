@@ -1,5 +1,6 @@
 import { CalendarDays } from 'lucide-react';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { ApiUnavailable, EmptyState } from '@/components/empty-state';
 import { EventCard } from '@/components/events/event-card';
 import { Screen } from '@/components/screen';
@@ -50,7 +51,12 @@ export default async function EventsPage() {
         <>
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-vg-primary">Hosting</p>
           <p className="text-muted-foreground">
-            Grove organizers and verified organizations can publish events from the app.
+            Grove organizers and verified organizations can publish events from the app. The hosts
+            are listed in the{' '}
+            <Link href="/organizations" className="text-vg-accent-2 hover:underline">
+              organization directory
+            </Link>
+            .
           </p>
           <p className="text-muted-foreground">
             Some events reveal the exact address only after you RSVP. That is the organizer's call,

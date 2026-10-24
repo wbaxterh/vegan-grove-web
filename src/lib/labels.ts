@@ -1,4 +1,12 @@
-import type { EventType, MediaKind, PlaceType, VeganLevel } from './types';
+import type {
+  CreatorTopic,
+  EventType,
+  MediaKind,
+  OrganizationType,
+  PlaceType,
+  VeganLevel,
+} from './types';
+import { CREATOR_TOPICS } from './types';
 
 export const PLACE_TYPE_LABELS: Record<PlaceType, string> = {
   sanctuary: 'Sanctuary',
@@ -59,3 +67,31 @@ export const MEDIA_KIND_LABELS: Record<MediaKind, string> = {
 export function showsVeganLevel(type: string): boolean {
   return type !== 'sanctuary' && type !== 'garden';
 }
+
+export const CREATOR_TOPIC_LABELS: Record<CreatorTopic, string> = {
+  outreach: 'Outreach',
+  'animal-rights': 'Animal rights',
+  cooking: 'Cooking',
+  nutrition: 'Nutrition',
+  fitness: 'Fitness',
+  environment: 'Environment',
+};
+
+export function creatorTopicLabel(topic: string): string {
+  if ((CREATOR_TOPICS as readonly string[]).includes(topic)) {
+    return CREATOR_TOPIC_LABELS[topic as CreatorTopic];
+  }
+  return topic.replace(/-/g, ' ');
+}
+
+export const CREATOR_KIND_LABELS: Record<'person' | 'duo' | 'team', string> = {
+  person: 'Person',
+  duo: 'Duo',
+  team: 'Team',
+};
+
+export const ORGANIZATION_TYPE_LABELS: Record<OrganizationType, string> = {
+  org: 'Organization',
+  sanctuary: 'Sanctuary',
+  business: 'Business',
+};

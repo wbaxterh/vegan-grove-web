@@ -62,8 +62,15 @@ export default defineConfig({
     },
     {
       name: 'chromium',
-      testIgnore: /media.*\.spec\.ts/,
+      testIgnore: /media.*\.spec\.ts|directories\.spec\.ts/,
       dependencies: ['degraded'],
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'directories',
+      testMatch: /directories\.spec\.ts/,
+      fullyParallel: false,
+      dependencies: ['chromium'],
       use: { ...devices['Desktop Chrome'] },
     },
     {
@@ -74,8 +81,8 @@ export default defineConfig({
       name: 'media',
       testMatch: /media\.spec\.ts/,
       fullyParallel: false,
-      // After the map tests, not alongside them: two projects on one dev server starve each other.
-      dependencies: ['chromium'],
+      // After the directory pages, not alongside the map: two projects on one dev server starve each other.
+      dependencies: ['directories'],
       use: { ...devices['Desktop Chrome'] },
     },
   ],

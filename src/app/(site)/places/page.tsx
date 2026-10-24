@@ -74,6 +74,12 @@ export default function PlacesPage() {
             they appear.
           </p>
           <p>
+            <Link href="/areas" className="text-vg-accent-2 hover:underline">
+              Browse by area
+            </Link>{' '}
+            when you want a list instead of the map.
+          </p>
+          <p>
             Know a place we are missing?{' '}
             <Link href="/login?next=/app/feed" className="text-vg-accent-2 hover:underline">
               Log in to submit it

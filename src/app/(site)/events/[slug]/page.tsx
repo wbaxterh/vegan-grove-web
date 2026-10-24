@@ -12,6 +12,16 @@ import { cn } from '@/lib/utils';
 
 type Props = { params: Promise<{ slug: string }> };
 
+function hostHref(event: GroveEvent): string | null {
+  if (event.host?.slug) {
+    if (event.host.type === 'grove') return `/groves/${event.host.slug}`;
+    if (event.host.type === 'organization') return `/organizations/${event.host.slug}`;
+    return null;
+  }
+  if (event.hostSlug && event.hostType === 'grove') return `/groves/${event.hostSlug}`;
+  return null;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const event = await loadOne<GroveEvent>(`/events/${encodeURIComponent(slug)}`, 'event');
@@ -32,8 +42,7 @@ export default async function EventPage({ params }: Props) {
     );
   }
 
-  const hostHref =
-    event.hostSlug && event.hostType === 'grove' ? `/groves/${event.hostSlug}` : null;
+  const hostLink = hostHref(event);
 
   return (
     <Screen
@@ -77,8 +86,8 @@ export default async function EventPage({ params }: Props) {
           ) : null}
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-vg-primary">Host</p>
           <p>
-            {hostHref ? (
-              <Link href={hostHref} className="text-vg-accent-2 hover:underline">
+            {hostLink ? (
+              <Link href={hostLink} className="text-vg-accent-2 hover:underline">
                 {event.host?.name ?? event.hostName ?? 'A grove'}
               </Link>
             ) : (

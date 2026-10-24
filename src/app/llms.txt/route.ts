@@ -1,3 +1,4 @@
+import { directoryLlmsLines } from '@/lib/directory.server';
 import { MEDIA_KIND_LABELS } from '@/lib/labels';
 import { loadAllMedia, loadCollections } from '@/lib/media-library.server';
 import { SITE } from '@/lib/site';
@@ -15,7 +16,11 @@ function mediaLine(item: MediaItem): string {
 }
 
 export async function GET() {
-  const [media, collections] = await Promise.all([loadAllMedia(), loadCollections()]);
+  const [media, collections, directories] = await Promise.all([
+    loadAllMedia(),
+    loadCollections(),
+    directoryLlmsLines(),
+  ]);
 
   const body = [
     `# ${SITE.name}`,
@@ -38,6 +43,9 @@ export async function GET() {
     `- ${SITE.url}/groves`,
     `- ${SITE.url}/media`,
     `- ${SITE.url}/guides`,
+    `- ${SITE.url}/creators`,
+    `- ${SITE.url}/organizations`,
+    `- ${SITE.url}/areas`,
     `- ${SITE.url}/privacy`,
     '',
     '## Media library',
@@ -57,6 +65,7 @@ export async function GET() {
         )
       : ['- (no collections published yet)']),
     '',
+    ...directories,
   ].join('\n');
 
   return new Response(body, {

@@ -31,6 +31,20 @@ test('/media falls back to the plain grid when /api/media/home is not there yet'
   }
 });
 
+test('/creators stays up when the creators API answers 404', async ({ page, request }) => {
+  const switched = await request.post(`${MOCK_URL}/__mock/creators`, { data: { status: 404 } });
+  expect(switched.ok()).toBe(true);
+  try {
+    const response = await page.goto('/creators');
+    expect(response?.status()).toBe(200);
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Creators');
+    await expect(page.getByText('Creators are unavailable right now')).toBeVisible();
+  } finally {
+    const restored = await request.delete(`${MOCK_URL}/__mock/creators`);
+    expect(restored.ok()).toBe(true);
+  }
+});
+
 /**
  * Warm-up, not a test of behaviour: the map tests run in parallel right after this project,
  * and the first request to a route in dev mode pays its compile. Paying it here, alone, keeps

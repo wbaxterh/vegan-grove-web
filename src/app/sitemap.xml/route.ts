@@ -1,3 +1,4 @@
+import { directorySitemapPaths } from '@/lib/directory.server';
 import { loadAllMedia, loadCollections } from '@/lib/media-library.server';
 import { PUBLIC_ROUTES, SITE } from '@/lib/site';
 
@@ -18,17 +19,21 @@ function url(path: string): string {
 }
 
 /**
- * Static routes plus every published media item and collection. Places, events, and the
- * rest join once the API exposes a slug feed for them. An unreachable API yields the static
- * routes alone rather than a failed build.
+ * Static routes plus published media, creators, organizations, and area and city pages.
+ * An unreachable API yields the static routes alone rather than a failed build.
  */
 export async function GET() {
-  const [media, collections] = await Promise.all([loadAllMedia(), loadCollections()]);
+  const [media, collections, directories] = await Promise.all([
+    loadAllMedia(),
+    loadCollections(),
+    directorySitemapPaths(),
+  ]);
 
   const urls = [
     ...PUBLIC_ROUTES.map(url),
     ...collections.map((collection) => url(`/media/collections/${collection.slug}`)),
     ...media.map((item) => url(`/media/${item.slug}`)),
+    ...directories.map(url),
   ].join('\n');
 
   const body = [
