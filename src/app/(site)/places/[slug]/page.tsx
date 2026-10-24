@@ -7,6 +7,7 @@ import { PlaceTypeIcon } from '@/components/places/place-type-icon';
 import { Screen } from '@/components/screen';
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
+import { areaPath, cityPath, slugifyCity } from '@/lib/areas';
 import { hoursLines, telHref } from '@/lib/format';
 import {
   PLACE_TYPE_BLURBS,
@@ -58,9 +59,9 @@ export default async function PlacePage({ params }: Props) {
             <PlaceTypeIcon type={place.type} />
             {PLACE_TYPE_LABELS[place.type]}
           </Badge>
-          {place.area !== 'other' ? (
+          <Link href={areaPath(place.area)}>
             <Badge variant="outline">{AREA_LABELS[place.area]}</Badge>
-          ) : null}
+          </Link>
           {place.chain ? <Badge variant="outline">Chain</Badge> : null}
         </div>
       }
@@ -102,7 +103,16 @@ export default async function PlacePage({ params }: Props) {
             <span>
               {place.address}
               <br />
-              {cityLine}
+              {slugifyCity(place.city) ? (
+                <Link
+                  href={cityPath(place.area, slugifyCity(place.city))}
+                  className="hover:underline"
+                >
+                  {cityLine}
+                </Link>
+              ) : (
+                cityLine
+              )}
             </span>
           </p>
           {place.phone ? (

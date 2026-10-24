@@ -7,6 +7,15 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 font-mono text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
         <p>Open about the system, closed about the people. No analytics, no trackers.</p>
         <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-2">
+          <Link href="/creators" className="hover:text-foreground">
+            Creators
+          </Link>
+          <Link href="/organizations" className="hover:text-foreground">
+            Organizations
+          </Link>
+          <Link href="/areas" className="hover:text-foreground">
+            Areas
+          </Link>
           <Link href="/privacy" className="hover:text-foreground">
             Privacy
           </Link>

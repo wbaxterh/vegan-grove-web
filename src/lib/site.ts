@@ -19,6 +19,9 @@ export const PUBLIC_ROUTES = [
   '/groves',
   '/media',
   '/guides',
+  '/creators',
+  '/organizations',
+  '/areas',
   '/privacy',
   '/terms',
 ] as const;

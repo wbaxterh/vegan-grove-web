@@ -267,3 +267,70 @@ export type PublicStats = {
   groves: number;
   members: number;
 };
+
+/** Vocabulary topics. Free tags such as `philosophy` may appear beside these. */
+export const CREATOR_TOPICS = [
+  'outreach',
+  'animal-rights',
+  'cooking',
+  'nutrition',
+  'fitness',
+  'environment',
+] as const;
+
+export type CreatorTopic = (typeof CREATOR_TOPICS)[number];
+
+export type CreatorKind = 'person' | 'duo' | 'team';
+
+/**
+ * Handles only. Clients build the links. There is no field here for a count,
+ * and no image: portraits are not ours to hotlink.
+ */
+export type SocialHandles = {
+  youtube?: string | null;
+  instagram?: string | null;
+  tiktok?: string | null;
+  x?: string | null;
+  bluesky?: string | null;
+  mastodon?: string | null;
+  facebook?: string | null;
+};
+
+export type CreatorSource = { url: string; label: string };
+
+/** `GET /api/creators` and `GET /api/creators/:slug`. Published rows only; retired is a 410. */
+export type Creator = {
+  id: string;
+  name: string;
+  slug: string;
+  alsoKnownAs: string[];
+  kind: CreatorKind;
+  members: string[];
+  bio: string;
+  topics: string[];
+  country: string | null;
+  languages: string[];
+  website: string | null;
+  podcast: string | null;
+  socials: SocialHandles;
+  externalIds?: { wikidata?: string };
+  veganSource: CreatorSource | null;
+  relatedGuideIds?: string[];
+  relatedMediaIds?: string[];
+};
+
+export type OrganizationType = 'org' | 'sanctuary' | 'business';
+
+/** `GET /api/organizations`. `adminUserIds` is never part of this shape. */
+export type Organization = {
+  id: string;
+  name: string;
+  slug: string;
+  type: OrganizationType;
+  description: string;
+  website: string | null;
+  socials: SocialHandles;
+  area: Area | null;
+  verified: boolean;
+  sourceUrl?: string | null;
+};

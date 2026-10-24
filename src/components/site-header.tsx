@@ -11,6 +11,7 @@ const NAV = [
   { href: '/groves', label: 'Groves' },
   { href: '/media', label: 'Media' },
   { href: '/guides', label: 'Guides' },
+  { href: '/creators', label: 'Creators' },
 ] as const;
 
 export function SiteHeader() {

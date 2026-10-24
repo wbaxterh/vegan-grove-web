@@ -87,6 +87,74 @@ const chainCafe = {
 
 const places = [sanctuary, garden, chainCafe];
 
+const creators = [
+  {
+    id: '0000000000000000000000c1',
+    name: 'Ed Winters',
+    slug: 'ed-winters',
+    alsoKnownAs: ['Earthling Ed'],
+    kind: 'person',
+    members: [],
+    bio: 'Educator and author who makes the ethical case for veganism through talks, books, and street conversations.',
+    topics: ['outreach', 'animal-rights'],
+    country: 'GB',
+    languages: ['en'],
+    website: 'https://earthlinged.org/',
+    podcast: null,
+    socials: { youtube: 'UCVRrGAcUc7cblUzOhI1KfFg', instagram: 'earthlinged' },
+    externalIds: { wikidata: 'Q65930940' },
+    veganSource: { url: 'https://en.wikipedia.org/wiki/Ed_Winters', label: 'Wikipedia' },
+    relatedGuideIds: [],
+    relatedMediaIds: [],
+  },
+  {
+    id: '0000000000000000000000c2',
+    name: 'Ava Cooks',
+    slug: 'ava-cooks',
+    alsoKnownAs: [],
+    kind: 'person',
+    members: [],
+    bio: 'Cooks weeknight meals from plants and writes the method down.',
+    topics: ['cooking', 'nutrition'],
+    country: 'US',
+    languages: ['en', 'es'],
+    website: 'https://example.org/ava',
+    podcast: 'https://example.org/ava/podcast',
+    socials: { youtube: '@avacooks', tiktok: 'avacooks' },
+    externalIds: {},
+    veganSource: { url: 'https://example.org/ava/about', label: 'Own site' },
+    relatedGuideIds: [],
+    relatedMediaIds: [],
+  },
+];
+
+const organizations = [
+  {
+    id: '0000000000000000000000a1',
+    name: 'Harbor Animal Save',
+    slug: 'harbor-animal-save',
+    type: 'org',
+    description: 'Bears witness at harbor-area slaughterhouses and organizes monthly vigils.',
+    website: 'https://example.org',
+    socials: { instagram: 'harboranimalsave' },
+    area: 'south_bay',
+    verified: true,
+    sourceUrl: null,
+  },
+  {
+    id: '0000000000000000000000a2',
+    name: 'Fixture Sanctuary Org',
+    slug: 'fixture-sanctuary-org',
+    type: 'sanctuary',
+    description: 'A sanctuary that hosts volunteer days.',
+    website: null,
+    socials: {},
+    area: 'long_beach',
+    verified: false,
+    sourceUrl: null,
+  },
+];
+
 function inBbox(place, bbox) {
   if (!bbox) return true;
   const [w, s, e, n] = bbox.split(',').map(Number);
@@ -520,7 +588,7 @@ const unauthorized = () => [401, { error: { code: 'unauthorized', message: 'Log 
 const notImplemented = (path) => [501, { error: { code: 'not_implemented', message: path } }];
 
 // Test hooks and the request log.
-const control = { mediaHomeStatus: 200 };
+const control = { mediaHomeStatus: 200, creatorsStatus: 200 };
 const requests = [];
 
 function record(req, url, auth) {
@@ -545,6 +613,22 @@ const routes = [
     /^\/__mock\/media-home$/,
     () => {
       control.mediaHomeStatus = 200;
+      return [200, { status: 200 }];
+    },
+  ],
+  [
+    'POST',
+    /^\/__mock\/creators$/,
+    ({ body }) => {
+      control.creatorsStatus = Number(body?.status) || 200;
+      return [200, { status: control.creatorsStatus }];
+    },
+  ],
+  [
+    'DELETE',
+    /^\/__mock\/creators$/,
+    () => {
+      control.creatorsStatus = 200;
       return [200, { status: 200 }];
     },
   ],
@@ -689,6 +773,45 @@ const routes = [
     () => [200, { place }],
   ]),
   ['GET', /^\/api\/places\/[^/]+$/, () => notFound('place')],
+
+  [
+    'GET',
+    /^\/api\/creators$/,
+    () => {
+      if (control.creatorsStatus !== 200) {
+        return [
+          control.creatorsStatus,
+          { error: { code: 'not_found', message: 'Creators are not deployed' } },
+        ];
+      }
+      // Reverse of alphabetical, so the page has to sort.
+      const items = [...creators].sort((a, b) => b.name.localeCompare(a.name));
+      return [200, { items, nextCursor: null }];
+    },
+  ],
+  [
+    'GET',
+    /^\/api\/creators\/([^/]+)$/,
+    ({ match }) => {
+      if (match[1] === 'retired-creator') {
+        return [
+          410,
+          { error: { code: 'creator_retired', message: 'This creator entry has been retired.' } },
+        ];
+      }
+      const creator = creators.find((entry) => entry.slug === match[1]);
+      return creator ? [200, { creator }] : notFound('creator');
+    },
+  ],
+  ['GET', /^\/api\/organizations$/, () => [200, { items: organizations, nextCursor: null }]],
+  [
+    'GET',
+    /^\/api\/organizations\/([^/]+)$/,
+    ({ match }) => {
+      const organization = organizations.find((entry) => entry.slug === match[1]);
+      return organization ? [200, { organization }] : notFound('organization');
+    },
+  ],
 ];
 
 function readJson(req) {
